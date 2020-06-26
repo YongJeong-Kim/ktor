@@ -9,6 +9,7 @@ import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -19,7 +20,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ProfileService {
-  fun findById(id: Int): Profile = transaction {
+  fun findById(id: Int): List<Profile> = transaction {
     Profiles.select { Profiles.id eq id }
       .map {
         Profile(
@@ -28,7 +29,18 @@ class ProfileService {
           width = it[Profiles.width],
           photoDate = it[Profiles.photoDate]?.toDate()
         )
-      }[0]
+      }
+  }
+  fun findByFilename(filename: String): List<Profile> = transaction {
+    Profiles.select { Profiles.filename eq filename }
+      .map {
+        Profile(
+          filename = it[Profiles.filename],
+          height = it[Profiles.height],
+          width = it[Profiles.width],
+          photoDate = it[Profiles.photoDate]?.toDate()
+        )
+      }
   }
   fun create(profile: Profile) = transaction {
     Profiles.insert {
@@ -98,4 +110,7 @@ class ProfileService {
     } else null
 
   private fun dateIsNotNull(date: Date?) = date != null
+  fun deleteByFilename(filename: String) = transaction {
+    Profiles.deleteWhere { Profiles.filename eq filename }
+  }
 }
