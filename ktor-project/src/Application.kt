@@ -43,15 +43,7 @@ fun Application.module(testing: Boolean = false) {
     }
   }
 
-  Database.connect(
-    url = "jdbc:mysql://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul",
-    driver = "com.mysql.cj.jdbc.Driver",
-    user = "root",
-    password = "1234")
-  transaction {
-    addLogger(StdOutSqlLogger)
-    SchemaUtils.create(Profiles)
-  }
+  DatabaseFactory.init()
 
   val uploadPath = "upload"
   Files.createDirectories(Paths.get(uploadPath))

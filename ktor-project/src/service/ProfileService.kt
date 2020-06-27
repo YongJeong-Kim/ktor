@@ -9,10 +9,7 @@ import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.io.File
@@ -20,7 +17,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ProfileService {
-  fun findById(id: Int): List<Profile> = transaction {
+  fun generateId(): String = UUID.randomUUID().toString().replace("-", "")
+  fun findById(id: String): List<Profile> = transaction {
     Profiles.select { Profiles.id eq id }
       .map {
         Profile(
@@ -31,33 +29,20 @@ class ProfileService {
         )
       }
   }
-  fun findByFilename(filename: String): List<Profile> = transaction {
-    Profiles.select { Profiles.filename eq filename }
-      .map {
-        Profile(
-          filename = it[Profiles.filename],
-          height = it[Profiles.height],
-          width = it[Profiles.width],
-          photoDate = it[Profiles.photoDate]?.toDate()
-        )
-      }
-  }
-  fun create(profile: Profile) = transaction {
-    Profiles.insert {
+  fun create(profile: Profile): Profile? = transaction {
+    val insertedId = Profiles.insert {
+      it[id] = profile.id
       it[filename] = profile.filename
       it[height] = profile.height
       it[width] = profile.width
       it[photoDate] = dateToDateTime(profile.photoDate)
-    }
+    } get Profiles.id
+    Profiles.select { Profiles.id eq insertedId and (Profiles.filename eq profile.filename) }
+      .mapNotNull { toProfile(it) }
+      .singleOrNull()
   }
   fun findAll(): List<Profile> = transaction {
-    Profiles.selectAll().map {
-      Profile(filename = it[Profiles.filename],
-        height = it[Profiles.height],
-        width = it[Profiles.width],
-        photoDate = it[Profiles.photoDate]?.toDate()
-      )
-    }
+    Profiles.selectAll().map { toProfile(it) }
   }
   fun getImageMetadata(filename: String, uploadPath: String): Profile {
     val file = File("$uploadPath/$filename")
@@ -110,7 +95,13 @@ class ProfileService {
     } else null
 
   private fun dateIsNotNull(date: Date?) = date != null
-  fun deleteByFilename(filename: String) = transaction {
-    Profiles.deleteWhere { Profiles.filename eq filename }
-  }
+
+  private fun toProfile(row: ResultRow): Profile =
+    Profile(
+      id = row[Profiles.id],
+      filename = row[Profiles.filename],
+      height = row[Profiles.height],
+      width = row[Profiles.width],
+      photoDate = row[Profiles.photoDate]?.toDate()
+    )
 }

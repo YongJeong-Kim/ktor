@@ -1,49 +1,42 @@
 package com.example
 
 import com.drew.imaging.ImageMetadataReader
-import com.drew.imaging.jpeg.JpegMetadataReader
 import com.drew.metadata.exif.ExifIFD0Directory
 import com.drew.metadata.exif.ExifImageDirectory
 import com.drew.metadata.exif.ExifSubIFDDirectory
-import com.drew.metadata.jpeg.JpegDirectory
 import com.example.entity.Profile
-import com.example.entity.Profiles
 import com.example.service.ProfileService
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.routing.*
 import io.ktor.http.*
-import io.ktor.content.*
-import io.ktor.http.content.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.jackson.*
-import io.ktor.features.*
-import kotlin.test.*
-import io.ktor.server.testing.*
+import io.ktor.http.content.PartData
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
+import io.ktor.server.testing.withTestApplication
 import io.ktor.utils.io.streams.asInput
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.Assertions
 import org.jetbrains.exposed.sql.Database
 import org.joda.time.DateTime
-import org.junit.Assert.assertThat
+import org.junit.Assert
+import org.junit.Before
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.asserter
 
 class ApplicationTest {
-  @Test
-  fun findById() {
-    Database.connect(
-      url = "jdbc:mysql://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul",
-      driver = "com.mysql.cj.jdbc.Driver",
-      user = "root",
-      password = "1234")
-    val profileService = ProfileService()
-    profileService.create(Profile(height = 11, width = 22, filename = "8F82D81D79H", photoDate = null))
-    assertNotNull(profileService.findByFilename("8F82D81D79H"))
-    profileService.deleteByFilename("8F82D81D79H")
+  private val profileService = ProfileService()
+  @Before
+  fun before() {
+    println("before")
+    DatabaseFactory.init()
   }
   @Test
   fun testRoot() {

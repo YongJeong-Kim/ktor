@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+  implementation("com.zaxxer:HikariCP:3.4.5")
   implementation("com.drewnoakes:metadata-extractor:2.14.0")
   implementation("org.jetbrains.exposed:exposed-core:0.24.1")
   implementation("org.jetbrains.exposed:exposed-jdbc:0.24.1")
@@ -33,8 +34,12 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:$logback_version")
   implementation("io.ktor:ktor-server-core:$ktor_version")
   implementation("io.ktor:ktor-jackson:$ktor_version")
-  implementation("mysql:mysql-connector-java:8.0.20")
+//  implementation("mysql:mysql-connector-java:8.0.20")
   testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+  testCompile("org.junit.jupiter:junit-jupiter-api:5.7.0-M1")
+  testCompile("org.junit.jupiter:junit-jupiter-engine:5.7.0-M1")
+  testCompile("org.assertj:assertj-core:3.16.1")
+  testCompile("com.h2database:h2:1.4.200")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

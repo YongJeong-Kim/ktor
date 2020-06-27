@@ -38,7 +38,7 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
       }
     }
     get("/{id}") {
-      val id = call.parameters["id"]!!.toInt()
+      val id = call.parameters["id"]!!.toString()
       call.respond(profileService.findById(id))
     }
   }
