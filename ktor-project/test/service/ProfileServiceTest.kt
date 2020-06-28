@@ -1,10 +1,8 @@
 package service
 
-import com.example.DatabaseFactory
 import com.example.entity.Profile
 import com.example.service.ProfileService
 import org.assertj.core.api.Assertions
-import org.junit.Before
 import org.junit.jupiter.api.Assertions.assertNotNull
 import java.util.*
 import kotlin.test.Test
@@ -12,11 +10,6 @@ import kotlin.test.Test
 internal class ProfileServiceTest {
   private val profileService = ProfileService()
 
-  @Before
-  fun before() {
-    println("before")
-    DatabaseFactory.init()
-  }
   @Test
   fun findAll() {
     // given

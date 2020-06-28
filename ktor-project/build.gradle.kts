@@ -34,11 +34,12 @@ dependencies {
   implementation("ch.qos.logback:logback-classic:$logback_version")
   implementation("io.ktor:ktor-server-core:$ktor_version")
   implementation("io.ktor:ktor-jackson:$ktor_version")
-//  implementation("mysql:mysql-connector-java:8.0.20")
+  implementation("mysql:mysql-connector-java:8.0.20")
   testImplementation("io.ktor:ktor-server-tests:$ktor_version")
   testCompile("org.junit.jupiter:junit-jupiter-api:5.7.0-M1")
   testCompile("org.junit.jupiter:junit-jupiter-engine:5.7.0-M1")
   testCompile("org.assertj:assertj-core:3.16.1")
+  testCompile("io.rest-assured:rest-assured:4.3.0")
   testCompile("com.h2database:h2:1.4.200")
 }
 

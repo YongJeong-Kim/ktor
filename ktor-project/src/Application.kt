@@ -1,6 +1,5 @@
 package com.example
 
-import com.example.entity.Profiles
 import com.example.routes.profile
 import com.example.service.ProfileService
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -18,11 +17,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -32,7 +26,6 @@ fun main(args: Array<String>): Unit {
     module()
   }.start(wait = true)
 }
-
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads

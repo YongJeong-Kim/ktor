@@ -11,7 +11,7 @@ object Profiles: Table() {
   val width = integer("width")
   val photoDate = datetime("photo_date").nullable()
 
-  override val primaryKey = PrimaryKey(id, filename)
+  override val primaryKey = PrimaryKey(id)
 }
 
 data class Profile(

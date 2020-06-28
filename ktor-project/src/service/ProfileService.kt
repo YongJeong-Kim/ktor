@@ -22,6 +22,7 @@ class ProfileService {
     Profiles.select { Profiles.id eq id }
       .map {
         Profile(
+          id = it[Profiles.id],
           filename = it[Profiles.filename],
           height = it[Profiles.height],
           width = it[Profiles.width],
@@ -38,7 +39,7 @@ class ProfileService {
       it[photoDate] = dateToDateTime(profile.photoDate)
     } get Profiles.id
     Profiles.select { Profiles.id eq insertedId and (Profiles.filename eq profile.filename) }
-      .mapNotNull { toProfile(it) }
+      .map { toProfile(it) }
       .singleOrNull()
   }
   fun findAll(): List<Profile> = transaction {
@@ -57,9 +58,9 @@ class ProfileService {
       val fileSystemDirectory = metaData.getFirstDirectoryOfType(FileSystemDirectory::class.java)
       val filename = fileSystemDirectory.getString(FileSystemDirectory.TAG_FILE_NAME)
 
-      return Profile(filename = filename, height = height, width = width, photoDate = date)
+      return Profile(id = generateId(), filename = filename, height = height, width = width, photoDate = date)
     } else
-      throw Exception("exif directory가 null 입니다.")
+      throw Exception("exif directory가 null인 이미지 입니다.")
   }
 
   suspend fun uploadImage(multipart: MultiPartData, uploadPath: String): String {

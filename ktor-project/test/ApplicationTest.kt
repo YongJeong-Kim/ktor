@@ -50,8 +50,10 @@ class ApplicationTest {
   @Test
   fun testProfileRoot() {
     withTestApplication({ module(testing = true) }) {
-      handleRequest(HttpMethod.Get, "/profile").apply {
+      handleRequest(HttpMethod.Get, "/profile/{id}").apply {
         assertEquals(HttpStatusCode.OK, response.status())
+        val qq = response.call.parameters
+        val ee= response.content
       }
     }
   }
