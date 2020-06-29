@@ -4,22 +4,15 @@ import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.exif.ExifIFD0Directory
 import com.drew.metadata.exif.ExifImageDirectory
 import com.drew.metadata.exif.ExifSubIFDDirectory
-import com.example.entity.Profile
-import com.example.service.ProfileService
-import io.ktor.http.*
-import io.ktor.http.content.PartData
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import io.ktor.utils.io.streams.asInput
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.assertj.core.api.Assertions
-import org.jetbrains.exposed.sql.Database
 import org.joda.time.DateTime
-import org.junit.Assert
 import org.junit.Before
 import java.io.File
 import java.nio.file.Files
@@ -28,14 +21,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.asserter
 
 class ApplicationTest {
-  private val profileService = ProfileService()
   @Before
   fun before() {
-    println("before")
     DatabaseFactory.init()
   }
   @Test
@@ -48,50 +37,8 @@ class ApplicationTest {
     }
   }
   @Test
-  fun testProfileRoot() {
-    withTestApplication({ module(testing = true) }) {
-      handleRequest(HttpMethod.Get, "/profile/{id}").apply {
-        assertEquals(HttpStatusCode.OK, response.status())
-        val qq = response.call.parameters
-        val ee= response.content
-      }
-    }
-  }
-  @Test
-  fun testUpload() {
-    val call = withTestApplication({ module(testing = true) }) {
-      handleRequest(HttpMethod.Post, "/upload") {
-        val boundary = "***bbb***"
-
-        addHeader(
-          HttpHeaders.ContentType,
-          ContentType.MultiPart.FormData.withParameter("boundary", boundary).toString()
-        )
-        setBody(boundary, listOf(
-          PartData.FormItem(
-            "title123", { }, headersOf(
-              HttpHeaders.ContentDisposition,
-              ContentDisposition.Inline
-                .withParameter(ContentDisposition.Parameters.Name, "title")
-                .toString()
-            )
-          ),
-          PartData.FileItem({ byteArrayOf(1, 2, 3).inputStream().asInput() }, {}, headersOf(
-            HttpHeaders.ContentDisposition,
-            ContentDisposition.File
-              .withParameter(ContentDisposition.Parameters.Name, "file")
-              .withParameter(ContentDisposition.Parameters.FileName, "file.txt")
-              .toString()
-          )
-          )
-        )
-        )
-      }
-    }
-  }
-  @Test
   fun fff() {
-    val ffile = File("""C:\Users\yongyong\Desktop\11.jpg""")
+    val ffile = File("""C:\Users\yongyong\Desktop\다운로드.jpg""")
     val metaData = ImageMetadataReader.readMetadata(ffile)
     val directory = metaData.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
     val bool = directory.containsTag(ExifSubIFDDirectory.TAG_COLOR_SPACE)

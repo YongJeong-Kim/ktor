@@ -25,3 +25,8 @@ data class Profile(
     this.id = id
   }
 }
+
+data class UploadInfoDTO(
+  val filename: String,
+  val uploadPath: String
+)

@@ -1,41 +1,44 @@
 package com.example.routes
 
 import com.example.entity.Profile
+import com.example.entity.UploadInfoDTO
 import com.example.service.ProfileService
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
-import io.ktor.request.receive
 import io.ktor.request.receiveMultipart
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.*
 
 fun Routing.profile(profileService: ProfileService, uploadPath: String) {
   route("/profile") {
-    get("/") {
+    get {
       call.respond(profileService.findAll())
     }
-    post("/") {
+
+    post {
       runBlocking {
         val multipart = call.receiveMultipart()
+        var uploadInfoDTO: UploadInfoDTO? = null
 
-        var filename = ""
         multipart.forEachPart { part ->
-          // if part is a file (could be form item)
-          if(part is PartData.FileItem) {
+          if (part is PartData.FormItem) {
+            if (part.name == "filename")
+              uploadInfoDTO = UploadInfoDTO(part.value, uploadPath)
+          } else if (part is PartData.FileItem) {
             // retrieve file name of upload
             val name = part.originalFileName!!
             val file = File("$uploadPath/$name")
-            filename = name
 
             // use InputStream from part to save file
             part.streamProvider().use { its ->
@@ -50,19 +53,16 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
           part.dispose()
         }
         withContext(Dispatchers.Default) {
-//          val filename = profileService.uploadImage(multipart, uploadPath)
-          val uploadedMetadata = profileService.getImageMetadata(filename, uploadPath)
-          val profile = profileService.create(uploadedMetadata) ?:
-            Profile("create file failed", 0, 0, Date())
-          call.respond(profile)
+          uploadInfoDTO?.let {
+            val uploadedMetadata = profileService.getImageMetadata(uploadInfoDTO!!)
+            val profile = profileService.create(uploadedMetadata)
+              ?: Profile("create file failed", 0, 0, Date())
+            call.respond(profile)
+          } ?: call.respond(HttpStatusCode.BadRequest)
         }
       }
     }
-    post("/create") {
-      val profile = call.receive<Profile>()
-      val qq = profileService.create(profile)
-      call.respond(HttpStatusCode.Created, qq!!)
-    }
+
     get("/{id}") {
       val id = call.parameters["id"]!!.toString()
       call.respond(HttpStatusCode.OK, profileService.findById(id))

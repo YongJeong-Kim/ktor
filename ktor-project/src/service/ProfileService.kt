@@ -5,6 +5,7 @@ import com.drew.metadata.exif.ExifSubIFDDirectory
 import com.drew.metadata.file.FileSystemDirectory
 import com.example.entity.Profile
 import com.example.entity.Profiles
+import com.example.entity.UploadInfoDTO
 import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
@@ -45,8 +46,8 @@ class ProfileService {
   fun findAll(): List<Profile> = transaction {
     Profiles.selectAll().map { toProfile(it) }
   }
-  fun getImageMetadata(filename: String, uploadPath: String): Profile {
-    val file = File("$uploadPath/$filename")
+  fun getImageMetadata(uploadInfoDTO: UploadInfoDTO): Profile {
+    val file = File("${uploadInfoDTO.uploadPath}/${uploadInfoDTO.filename}")
     val metaData = ImageMetadataReader.readMetadata(file)
     val exifDirectory: ExifSubIFDDirectory? = metaData.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
 
@@ -61,31 +62,6 @@ class ProfileService {
       return Profile(id = generateId(), filename = filename, height = height, width = width, photoDate = date)
     } else
       throw Exception("exif directory가 null인 이미지 입니다.")
-  }
-
-  suspend fun uploadImage(multipart: MultiPartData, uploadPath: String): String {
-    var filename = ""
-    multipart.forEachPart { part ->
-      // if part is a file (could be form item)
-      if(part is PartData.FileItem) {
-        // retrieve file name of upload
-        val name = part.originalFileName!!
-        val file = File("$uploadPath/$name")
-        filename = name
-
-        // use InputStream from part to save file
-        part.streamProvider().use { its ->
-          // copy the stream to the file with buffering
-          file.outputStream().buffered().use {
-            // note that this is blocking
-            its.copyTo(it)
-          }
-        }
-      }
-      // make sure to dispose of the part after use to prevent leaks
-      part.dispose()
-    }
-    return filename
   }
 
   private fun dateToDateTime(date: Date?): DateTime? =
