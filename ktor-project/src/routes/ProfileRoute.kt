@@ -14,10 +14,10 @@ import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.io.File
 
 fun Routing.profile(profileService: ProfileService, uploadPath: String) {
@@ -53,12 +53,16 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
           part.dispose()
         }
 
-        val imageMetadata = async { profileService.getImageMetadata(uploadInfoDTO!!) }
-        val pixelStatistics = async { profileService.getPixelStatistics(uploadInfoDTO!!) }
-//            val histogram = profileService.getHistogram(uploadInfoDTO!!)
-        val mergedProfile = profileService.mergeProfile(imageMetadata.await(), pixelStatistics.await(), "")
-        val profile = profileService.create(mergedProfile)
-        call.respond(profile!!)
+        uploadInfoDTO?.let {
+          val imageMetadata = async { profileService.getImageMetadata(uploadInfoDTO!!) }
+          val pixelStatistics = async { profileService.getPixelStatistics(uploadInfoDTO!!) }
+          val histogram = async { profileService.getHistogram(uploadInfoDTO!!) }
+          val mergedProfile =
+            profileService.mergeProfile(imageMetadata.await(), pixelStatistics.await(), histogram.await())
+          val profile = profileService.create(mergedProfile)
+            ?: Profile("create file failed")
+          call.respond(profile)
+        } ?: call.respond(HttpStatusCode.BadRequest)
         /*withContext(Dispatchers.Default) {
           uploadInfoDTO?.let {
             val imageMetadata = profileService.getImageMetadata(uploadInfoDTO!!)
@@ -76,6 +80,24 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
     get("/{id}") {
       val id = call.parameters["id"]!!.toString()
       call.respond(HttpStatusCode.OK, profileService.findById(id))
+    }
+
+    get("/test") {
+      coroutineScope {
+        val uploadInfoDTO = UploadInfoDTO("20170418_212609.jpg", "C:\\Users\\yongyong\\Desktop")
+        val imageMetadata =
+          async { profileService.getImageMetadata(uploadInfoDTO!!) }
+        val pixelStatistics =
+          async { profileService.getPixelStatistics(uploadInfoDTO!!) }
+        val histogram =
+          async { profileService.getHistogram(uploadInfoDTO!!) }
+        imageMetadata.await()
+        pixelStatistics.await()
+        histogram.await()
+//        val mergedProfile =
+//          profileService.mergeProfile(imageMetadata.await(), pixelStatistics.await(), histogram.await())
+        call.respond("")
+      }
     }
   }
 }

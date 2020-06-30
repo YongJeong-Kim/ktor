@@ -135,7 +135,8 @@ class ProfileService {
       for (j in ch[i].indices)
         for (p in ch[i][j].indices)
           if (ch[i][j][p] > 0)
-            histogramString += "$i:$j:$p:${ch[i][j][p]},"
+            histogramString = ""
+//            histogramString += "$i:$j:$p:${ch[i][j][p]},"
     /*        println("""
               t[$i][$j][$p] = ${ch[i][j][p]}
             """.trimIndent())*/
@@ -146,6 +147,7 @@ class ProfileService {
                    pixelStatisticsDTO: PixelStatisticsDTO,
                    histogram: String): Profile =
     Profile(filename = imageMetadataDTO.filename, height = imageMetadataDTO.height, width = imageMetadataDTO.width,
+      photoDate = imageMetadataDTO.photoDate,
       redMin = pixelStatisticsDTO.redMin, redMax = pixelStatisticsDTO.redMax, redAvg = pixelStatisticsDTO.redAvg,
       greenMin = pixelStatisticsDTO.greenMin, greenMax = pixelStatisticsDTO.greenMax, greenAvg = pixelStatisticsDTO.greenAvg,
       blueMin = pixelStatisticsDTO.blueMin, blueMax = pixelStatisticsDTO.blueMax, blueAvg = pixelStatisticsDTO.blueAvg,

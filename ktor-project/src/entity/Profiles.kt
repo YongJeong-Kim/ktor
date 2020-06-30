@@ -1,6 +1,5 @@
 package com.example.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 import java.util.*
@@ -30,7 +29,7 @@ data class Profile(
   val filename: String = "",
   val height: Int = 0,
   val width: Int = 0,
-  val photoDate: Date? = Date(),
+  val photoDate: Date? = null,
   val redMin: Int = 0,
   val redMax: Int = 0,
   val redAvg: Int = 0,

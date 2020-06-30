@@ -201,13 +201,15 @@ class ApplicationTest {
   fun coroutineTest() {
     runBlocking {
       println("start")
-      launch {
+      val a = async {
         delay(3000)
         println("launch 1")
+        "a"
       }
-      launch {
+      val b = async {
         delay(3000)
         println("launch 2")
+        "b"
       }
       withContext(Dispatchers.Default) {
         delay(3000)
@@ -218,6 +220,8 @@ class ApplicationTest {
         11
       }
       println("end")
+      println(a.await())
+      println(b.await())
       println(qq.await())
     }
   }
