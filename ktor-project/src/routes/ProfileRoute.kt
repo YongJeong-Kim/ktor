@@ -15,10 +15,10 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
 
 fun Routing.profile(profileService: ProfileService, uploadPath: String) {
   route("/profile") {
@@ -52,11 +52,15 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
           // make sure to dispose of the part after use to prevent leaks
           part.dispose()
         }
+
         withContext(Dispatchers.Default) {
           uploadInfoDTO?.let {
-            val uploadedMetadata = profileService.getImageMetadata(uploadInfoDTO!!)
-            val profile = profileService.create(uploadedMetadata)
-              ?: Profile("create file failed", 0, 0, Date())
+            val imageMetadata = profileService.getImageMetadata(uploadInfoDTO!!)
+            val pixelStatistics = profileService.getPixelStatistics(uploadInfoDTO!!)
+//            val histogram = profileService.getHistogram(uploadInfoDTO!!)
+            val mergedProfile = profileService.mergeProfile(imageMetadata, pixelStatistics, "")
+            val profile = profileService.create(mergedProfile)
+              ?: Profile("create file failed")
             call.respond(profile)
           } ?: call.respond(HttpStatusCode.BadRequest)
         }

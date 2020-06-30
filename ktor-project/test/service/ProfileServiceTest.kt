@@ -1,15 +1,26 @@
 package service
 
+import com.example.DatabaseFactory
 import com.example.entity.Profile
+import com.example.entity.Profiles
 import com.example.entity.UploadInfoDTO
 import com.example.service.ProfileService
 import org.assertj.core.api.Assertions
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.Before
 import org.junit.jupiter.api.Assertions.assertNotNull
 import java.util.*
 import kotlin.test.Test
 
 internal class ProfileServiceTest {
   private val profileService = ProfileService()
+
+  @Before
+  fun before() {
+    DatabaseFactory.init()
+    transaction { Profiles.deleteAll() }
+  }
 
   @Test
   fun findAll() {

@@ -4,7 +4,6 @@ import com.example.DatabaseFactory
 import com.example.entity.Profile
 import com.example.entity.Profiles
 import com.example.entity.UploadInfoDTO
-import com.example.service.ProfileService
 import io.restassured.RestAssured.get
 import io.restassured.RestAssured.given
 import org.assertj.core.api.Assertions.assertThat
@@ -16,7 +15,6 @@ import kotlin.test.Test
 
 
 internal class ProfileRouteKtTest {
-  private val profileService = ProfileService()
   private val uploadPath = "C:\\Users\\yongyong\\Desktop"
 
   @Before
