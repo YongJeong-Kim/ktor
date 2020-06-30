@@ -53,7 +53,13 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
           part.dispose()
         }
 
-        withContext(Dispatchers.Default) {
+        val imageMetadata = async { profileService.getImageMetadata(uploadInfoDTO!!) }
+        val pixelStatistics = async { profileService.getPixelStatistics(uploadInfoDTO!!) }
+//            val histogram = profileService.getHistogram(uploadInfoDTO!!)
+        val mergedProfile = profileService.mergeProfile(imageMetadata.await(), pixelStatistics.await(), "")
+        val profile = profileService.create(mergedProfile)
+        call.respond(profile!!)
+        /*withContext(Dispatchers.Default) {
           uploadInfoDTO?.let {
             val imageMetadata = profileService.getImageMetadata(uploadInfoDTO!!)
             val pixelStatistics = profileService.getPixelStatistics(uploadInfoDTO!!)
@@ -63,7 +69,7 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
               ?: Profile("create file failed")
             call.respond(profile)
           } ?: call.respond(HttpStatusCode.BadRequest)
-        }
+        }*/
       }
     }
 

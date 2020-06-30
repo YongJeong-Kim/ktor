@@ -1,5 +1,6 @@
 package com.example.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.jodatime.datetime
 import java.util.*
@@ -10,15 +11,15 @@ object Profiles: Table() {
   val height = integer("height")
   val width = integer("width")
   val photoDate = datetime("photo_date").nullable()
-  val rMin = integer("r_min")
-  val rMax = integer("r_max")
-  val rAvg = integer("r_avg")
-  val gMin = integer("g_min")
-  val gMax = integer("g_max")
-  val gAvg = integer("g_avg")
-  val bMin = integer("b_min")
-  val bMax = integer("b_max")
-  val bAvg = integer("b_avg")
+  val redMin = integer("r_min")
+  val redMax = integer("r_max")
+  val redAvg = integer("r_avg")
+  val greenMin = integer("g_min")
+  val greenMax = integer("g_max")
+  val greenAvg = integer("g_avg")
+  val blueMin = integer("b_min")
+  val blueMax = integer("b_max")
+  val blueAvg = integer("b_avg")
   val histogram = text("histogram")
 
   override val primaryKey = PrimaryKey(id)
@@ -30,15 +31,15 @@ data class Profile(
   val height: Int = 0,
   val width: Int = 0,
   val photoDate: Date? = Date(),
-  val rMin: Int = 0,
-  val rMax: Int = 0,
-  val rAvg: Int = 0,
-  val gMin: Int = 0,
-  val gMax: Int = 0,
-  val gAvg: Int = 0,
-  val bMin: Int = 0,
-  val bMax: Int = 0,
-  val bAvg: Int = 0,
+  val redMin: Int = 0,
+  val redMax: Int = 0,
+  val redAvg: Int = 0,
+  val greenMin: Int = 0,
+  val greenMax: Int = 0,
+  val greenAvg: Int = 0,
+  val blueMin: Int = 0,
+  val blueMax: Int = 0,
+  val blueAvg: Int = 0,
   val histogram: String = ""
 ) /*{
   var id: String = ""
@@ -53,15 +54,15 @@ data class UploadInfoDTO(
 )
 
 data class PixelStatisticsDTO(
-  val rMin: Int,
-  val rMax: Int,
-  val rAvg: Int,
-  val gMin: Int,
-  val gMax: Int,
-  val gAvg: Int,
-  val bMin: Int,
-  val bMax: Int,
-  val bAvg: Int
+  val redMin: Int,
+  val redMax: Int,
+  val redAvg: Int,
+  val greenMin: Int,
+  val greenMax: Int,
+  val greenAvg: Int,
+  val blueMin: Int,
+  val blueMax: Int,
+  val blueAvg: Int
 )
 
 data class ImageMetadataDTO(

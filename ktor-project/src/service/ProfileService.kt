@@ -4,8 +4,10 @@ import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.exif.ExifSubIFDDirectory
 import com.drew.metadata.file.FileSystemDirectory
 import com.example.entity.*
-import com.zaxxer.hikari.metrics.prometheus.PrometheusHistogramMetricsTrackerFactory
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import java.io.File
@@ -26,18 +28,18 @@ class ProfileService {
       it[height] = profile.height
       it[width] = profile.width
       it[photoDate] = dateToDateTime(profile.photoDate)
-      it[rMin] = profile.rMin
-      it[rMax] = profile.rMax
-      it[rAvg] = profile.rAvg
-      it[gMin] = profile.gMin
-      it[gMax] = profile.gMax
-      it[gAvg] = profile.gAvg
-      it[bMin] = profile.bMin
-      it[bMax] = profile.bMax
-      it[bAvg] = profile.bAvg
+      it[redMin] = profile.redMin
+      it[redMax] = profile.redMax
+      it[redAvg] = profile.redAvg
+      it[greenMin] = profile.greenMin
+      it[greenMax] = profile.greenMax
+      it[greenAvg] = profile.greenAvg
+      it[blueMin] = profile.blueMin
+      it[blueMax] = profile.blueMax
+      it[blueAvg] = profile.blueAvg
       it[histogram] = profile.histogram
     } get Profiles.id
-    Profiles.select { Profiles.id eq insertedId and (Profiles.filename eq profile.filename) }
+    Profiles.select { Profiles.id eq insertedId }
       .map { toProfile(it) }
       .singleOrNull()
   }
@@ -109,9 +111,9 @@ class ProfileService {
           else blueMax
       }
     }
-    return PixelStatisticsDTO(rMin = redMin, rMax = redMax, rAvg = avgValue(redSum, areaValue),
-      gMin = greenMin, gMax = greenMax, gAvg = avgValue(greenSum, areaValue),
-      bMin = blueMin, bMax = blueMax, bAvg = avgValue(blueSum, areaValue))
+    return PixelStatisticsDTO(redMin = redMin, redMax = redMax, redAvg = avgValue(redSum, areaValue),
+      greenMin = greenMin, greenMax = greenMax, greenAvg = avgValue(greenSum, areaValue),
+      blueMin = blueMin, blueMax = blueMax, blueAvg = avgValue(blueSum, areaValue))
   }
 
   fun getHistogram(uploadInfoDTO: UploadInfoDTO): String {
@@ -144,9 +146,9 @@ class ProfileService {
                    pixelStatisticsDTO: PixelStatisticsDTO,
                    histogram: String): Profile =
     Profile(filename = imageMetadataDTO.filename, height = imageMetadataDTO.height, width = imageMetadataDTO.width,
-      rMin = pixelStatisticsDTO.rMin, rMax = pixelStatisticsDTO.rMax, rAvg = pixelStatisticsDTO.rAvg,
-      gMin = pixelStatisticsDTO.gMin, gMax = pixelStatisticsDTO.gMax, gAvg = pixelStatisticsDTO.gAvg,
-      bMin = pixelStatisticsDTO.bMin, bMax = pixelStatisticsDTO.bMax, bAvg = pixelStatisticsDTO.bAvg,
+      redMin = pixelStatisticsDTO.redMin, redMax = pixelStatisticsDTO.redMax, redAvg = pixelStatisticsDTO.redAvg,
+      greenMin = pixelStatisticsDTO.greenMin, greenMax = pixelStatisticsDTO.greenMax, greenAvg = pixelStatisticsDTO.greenAvg,
+      blueMin = pixelStatisticsDTO.blueMin, blueMax = pixelStatisticsDTO.blueMax, blueAvg = pixelStatisticsDTO.blueAvg,
       histogram = histogram)
 
   private fun dateToDateTime(date: Date?): DateTime? =
@@ -165,15 +167,15 @@ class ProfileService {
       height = row[Profiles.height],
       width = row[Profiles.width],
       photoDate = row[Profiles.photoDate]?.toDate(),
-      rMin = row[Profiles.rMin],
-      rMax = row[Profiles.rMax],
-      rAvg = row[Profiles.rAvg],
-      gMin = row[Profiles.gMin],
-      gMax = row[Profiles.gMax],
-      gAvg = row[Profiles.gAvg],
-      bMin = row[Profiles.bMin],
-      bMax = row[Profiles.bMax],
-      bAvg = row[Profiles.bAvg],
+      redMin = row[Profiles.redMin],
+      redMax = row[Profiles.redMax],
+      redAvg = row[Profiles.redAvg],
+      greenMin = row[Profiles.greenMin],
+      greenMax = row[Profiles.greenMax],
+      greenAvg = row[Profiles.greenAvg],
+      blueMin = row[Profiles.blueMin],
+      blueMax = row[Profiles.blueMax],
+      blueAvg = row[Profiles.blueAvg],
       histogram = row[Profiles.histogram]
     )
 }
