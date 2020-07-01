@@ -17,9 +17,10 @@ import javax.imageio.ImageIO
 
 class ProfileService {
   private fun generateId(): String = UUID.randomUUID().toString().replace("-", "")
-  fun findById(id: String): List<Profile> = transaction {
+  fun findById(id: String): Profile? = transaction {
     Profiles.select { Profiles.id eq id }
       .map { toProfile(it) }
+      .singleOrNull()
   }
   fun create(profile: Profile): Profile {
     val insertedId = Profiles.insert {

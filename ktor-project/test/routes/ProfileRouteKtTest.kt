@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Before
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 
 internal class ProfileRouteKtTest {
@@ -44,8 +45,8 @@ internal class ProfileRouteKtTest {
       .then()
       .statusCode(200)
       .extract()
-      .`as`(Any::class.java) as List<Profile>
-    assertThat(newProfile).extracting("id").containsExactlyInAnyOrder(profile.id)
+      .`as`(Profile::class.java)
+    assertEquals(profile.id, newProfile.id)
   }
 
   @Test
@@ -55,8 +56,8 @@ internal class ProfileRouteKtTest {
       .then()
       .statusCode(200)
       .extract()
-      .`as`(Any::class.java) as List<Profile>
-    assertThat(newProfile).extracting("id").containsExactlyInAnyOrder(profile.id)
+      .`as`(Profile::class.java)
+    assertEquals(profile.id, newProfile.id)
   }
 
   private fun createProfile(uploadInfoDTO: UploadInfoDTO): Profile {

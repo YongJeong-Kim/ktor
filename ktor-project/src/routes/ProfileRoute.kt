@@ -70,7 +70,8 @@ fun Routing.profile(profileService: ProfileService, uploadPath: String) {
 
     get("/{id}") {
       val id = call.parameters["id"]!!.toString()
-      call.respond(HttpStatusCode.OK, profileService.findById(id))
+      profileService.findById(id)?.let { call.respond(HttpStatusCode.OK, it) }
+        ?: call.respond(HttpStatusCode.NotFound)
     }
   }
 }
