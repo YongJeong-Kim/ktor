@@ -19,7 +19,7 @@ object Profiles: Table() {
   val blueMin = integer("b_min")
   val blueMax = integer("b_max")
   val blueAvg = integer("b_avg")
-  val histogram = text("histogram")
+  val histogram = text("histogram")  // modify mediumtext
 
   override val primaryKey = PrimaryKey(id)
 }
@@ -40,12 +40,7 @@ data class Profile(
   val blueMax: Int = 0,
   val blueAvg: Int = 0,
   val histogram: String = ""
-) /*{
-  var id: String = ""
-  constructor(id: String, filename: String, height: Int, width: Int, photoDate: Date?): this(filename, height, width, photoDate) {
-    this.id = id
-  }
-}*/
+)
 
 data class UploadInfoDTO(
   val filename: String,

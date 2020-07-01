@@ -16,7 +16,7 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class ProfileService {
-  fun generateId(): String = UUID.randomUUID().toString().replace("-", "")
+  private fun generateId(): String = UUID.randomUUID().toString().replace("-", "")
   fun findById(id: String): List<Profile> = transaction {
     Profiles.select { Profiles.id eq id }
       .map { toProfile(it) }
@@ -69,7 +69,7 @@ class ProfileService {
       sum / value
     }
     val image = ImageIO.read(File("${uploadInfoDTO.uploadPath}/${uploadInfoDTO.filename}"))
-    val areaValue = image.height * image.width
+
     var redMin = 255
     var redMax = 0
     var greenMin = 255
@@ -84,7 +84,7 @@ class ProfileService {
       (0 until image.width).forEach { width ->
         val clr = image.getRGB(width, height)
         val red = (clr and 0x00ff0000) shr 16
-        val green = (clr and 0x0000ff00) shr 8;
+        val green = (clr and 0x0000ff00) shr 8
         val blue = clr and 0x000000ff
 
         // sum
@@ -112,6 +112,7 @@ class ProfileService {
           else blueMax
       }
     }
+    val areaValue = image.height * image.width
     return PixelStatisticsDTO(redMin = redMin, redMax = redMax, redAvg = avgValue(redSum, areaValue),
       greenMin = greenMin, greenMax = greenMax, greenAvg = avgValue(greenSum, areaValue),
       blueMin = blueMin, blueMax = blueMax, blueAvg = avgValue(blueSum, areaValue))
@@ -123,7 +124,7 @@ class ProfileService {
     for (x in 0 until image.width)
       for (y in 0 until image.height) {
         val color = image.getRGB(x, y)
-        val alpha = (color and -0x1000000) shr 24
+//        val alpha = (color and -0x1000000) shr 24
         val red = (color and 0x00ff0000) shr 16
         val green = (color and 0x0000ff00) shr 8
         val blue = color and 0x000000ff
@@ -131,20 +132,16 @@ class ProfileService {
         ch[red][green][blue]++
       }
 
-    var histogramString = ""
     val sb = StringBuilder()
     for (i in ch.indices)
       for (j in ch[i].indices)
         for (p in ch[i][j].indices)
           if (ch[i][j][p] > 0)
             sb.append("$i:$j:$p:${ch[i][j][p]},")
-//            histogramString += "$i:$j:$p:${ch[i][j][p]},"
-    /*        println("""
-              t[$i][$j][$p] = ${ch[i][j][p]}
-            """.trimIndent())*/
-//            println("t[" + i + "][" + j + "][" + p + "] = " + ch[i][j][p])
+
     return sb.toString()
   }
+
   fun mergeProfile(imageMetadataDTO: ImageMetadataDTO,
                    pixelStatisticsDTO: PixelStatisticsDTO,
                    histogram: String): Profile =

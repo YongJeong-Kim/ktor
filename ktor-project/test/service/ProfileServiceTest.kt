@@ -26,10 +26,10 @@ internal class ProfileServiceTest {
   fun findAll() {
     transaction {
       val profile1 = profileService.create(
-        Profile(profileService.generateId(), "test1.jpg", 22323, 4214124, Date())
+        Profile("", "test1.jpg", 22323, 4214124, Date())
       )
       val profile2 = profileService.create(
-        Profile(profileService.generateId(), "test2.jpg", 2444, 1111, Date())
+        Profile("", "test2.jpg", 2444, 1111, Date())
       )
 
       val profiles = profileService.findAll()
@@ -43,7 +43,7 @@ internal class ProfileServiceTest {
   fun findById() {
     transaction {
       val profile = profileService.create(
-        Profile(id = profileService.generateId(), height = 11, width = 22, filename = "test1.jpg", photoDate = Date())
+        Profile(id = "", height = 11, width = 22, filename = "test1.jpg", photoDate = Date())
       )
       assertNotNull(profileService.findById(profile.id))
     }
@@ -52,7 +52,7 @@ internal class ProfileServiceTest {
   fun create() {
     transaction {
       val profile = profileService.create(
-        Profile(id = profileService.generateId(), height = 11, width = 22, filename = "test1.jpg", photoDate = Date())
+        Profile(id = "", height = 11, width = 22, filename = "test1.jpg", photoDate = Date())
       )
       assertNotNull(profileService.findById(profile.id))
     }
