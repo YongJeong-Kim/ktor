@@ -18,7 +18,7 @@ internal class ProfileRouteKtTest {
   private val uploadPath = "C:\\Users\\yongyong\\Desktop"
 
   @Before
-  fun be() {
+  fun before() {
     DatabaseFactory.init()
     transaction { Profiles.deleteAll() }
   }
@@ -60,15 +60,6 @@ internal class ProfileRouteKtTest {
   }
 
   private fun createProfile(uploadInfoDTO: UploadInfoDTO): Profile {
-    /*return given()
-      .contentType(ContentType.JSON)
-      .body(profile)
-      .`when`()
-      .post("/profile/create")
-      .then()
-      .statusCode(201)
-      .extract()
-      .`as`(Profile::class.java)*/
     return given()
       .contentType("multipart/form-data")
       .multiPart(File("${uploadInfoDTO.uploadPath}/${uploadInfoDTO.filename}"))

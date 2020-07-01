@@ -10,6 +10,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import kotlinx.coroutines.*
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.junit.Before
 import java.awt.Color
@@ -176,9 +178,7 @@ class ApplicationTest {
       for (j in ch[i].indices)
         for (p in ch[i][j].indices)
           if (ch[i][j][p] > 0)
-            println("""
-              t[$i][$j][$p] = ${ch[i][j][p]}
-            """.trimIndent())
+            println("t[$i][$j][$p] = ${ch[i][j][p]}")
 //            println("t[" + i + "][" + j + "][" + p + "] = " + ch[i][j][p])
   }
   @Test
@@ -195,6 +195,20 @@ class ApplicationTest {
   @Test
   fun createIfNotEmpty() {
     Files.createDirectories(Paths.get("upload"))
+  }
+
+  @Test
+  fun rawSql() {
+    transaction {
+      val qq = TransactionManager.current().exec("SELECT VERSION();") {
+        it.next()
+        it.getString(1)
+      }?.map {
+        it.toString()
+      }
+
+      println(qq)
+    }
   }
 
   @Test

@@ -21,7 +21,7 @@ class ProfileService {
     Profiles.select { Profiles.id eq id }
       .map { toProfile(it) }
   }
-  fun create(profile: Profile): Profile? = transaction {
+  fun create(profile: Profile): Profile {
     val insertedId = Profiles.insert {
       it[id] = generateId()
       it[filename] = profile.filename
@@ -39,10 +39,11 @@ class ProfileService {
       it[blueAvg] = profile.blueAvg
       it[histogram] = profile.histogram
     } get Profiles.id
-    Profiles.select { Profiles.id eq insertedId }
+    return Profiles.select { Profiles.id eq insertedId }
       .map { toProfile(it) }
-      .singleOrNull()
+      .single()
   }
+
   fun findAll(): List<Profile> = transaction {
     Profiles.selectAll().map { toProfile(it) }
   }
@@ -131,17 +132,18 @@ class ProfileService {
       }
 
     var histogramString = ""
+    val sb = StringBuilder()
     for (i in ch.indices)
       for (j in ch[i].indices)
         for (p in ch[i][j].indices)
           if (ch[i][j][p] > 0)
-            histogramString = ""
+            sb.append("$i:$j:$p:${ch[i][j][p]},")
 //            histogramString += "$i:$j:$p:${ch[i][j][p]},"
     /*        println("""
               t[$i][$j][$p] = ${ch[i][j][p]}
             """.trimIndent())*/
 //            println("t[" + i + "][" + j + "][" + p + "] = " + ch[i][j][p])
-    return histogramString
+    return sb.toString()
   }
   fun mergeProfile(imageMetadataDTO: ImageMetadataDTO,
                    pixelStatisticsDTO: PixelStatisticsDTO,
