@@ -40,7 +40,6 @@ dependencies {
   testCompile("org.junit.jupiter:junit-jupiter-engine:5.7.0-M1")
   testCompile("org.assertj:assertj-core:3.16.1")
   testCompile("io.rest-assured:rest-assured:4.3.0")
-  testCompile("com.h2database:h2:1.4.200")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

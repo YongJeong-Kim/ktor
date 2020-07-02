@@ -71,7 +71,7 @@ internal class ProfileServiceTest {
   }
   @Test
   fun getHistogram() {
-    val profile = profileService.getPixelStatistics(UploadInfoDTO("20170418_212607.jpg", uploadPath))
+    val profile = profileService.getHistogram(UploadInfoDTO("20170418_212607.jpg", uploadPath))
     assertNotEquals("", profile)
   }
 }

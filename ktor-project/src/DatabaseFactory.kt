@@ -12,8 +12,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DatabaseFactory {
   fun init() {
 //    Database.connect(hikari())
-    Database.connect(url = "jdbc:mysql://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul", driver = "com.mysql.cj.jdbc.Driver", user = "root", password = "1234")
-//    Database.connect(url = "jdbc:h2:mem:test", driver = "org.h2.Driver", user = "sa", password = "")
+    Database.connect(
+      url = "jdbc:mysql://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul",
+      driver = "com.mysql.cj.jdbc.Driver",
+      user = "root",
+      password = "1234")
     transaction {
       addLogger(StdOutSqlLogger)
       create(Profiles)
@@ -22,13 +25,10 @@ object DatabaseFactory {
 
   private fun hikari(): HikariDataSource {
     val config = HikariConfig()
-    // mysql
-/*        config.jdbcUrl = "jdbc:mysql://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul"
+    config.jdbcUrl = "jdbc:mysql://localhost:3306/test?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul"
     config.driverClassName = "com.mysql.cj.jdbc.Driver"
     config.username = "root"
-    config.password = "1234"*/
-    config.driverClassName = "org.h2.Driver"
-    config.jdbcUrl = "jdbc:h2:mem:test"
+    config.password = "1234"
     config.maximumPoolSize = 3
     config.isAutoCommit = false
     config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
