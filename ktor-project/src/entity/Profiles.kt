@@ -43,9 +43,12 @@ data class Profile(
 )
 
 data class UploadInfoDTO(
-  val filename: String,
-  val uploadPath: String
-)
+  var filename: String,
+  var uploadPath: String
+) {
+  var filenameOfFormItem = "uninitialized filename of form item"
+  constructor(): this(filename = "uninitialized filename", uploadPath = "uninitialized upload path")
+}
 
 data class PixelStatisticsDTO(
   val redMin: Int,
