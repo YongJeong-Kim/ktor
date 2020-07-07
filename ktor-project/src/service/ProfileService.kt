@@ -69,6 +69,14 @@ class ProfileService {
     val avgValue = { sum: Int, value: Int ->
       sum / value
     }
+    val minValue = { min: Int, target: Int ->
+      if (min < target) min
+      else target
+    }
+    val maxValue = { max: Int, target: Int ->
+      if (max > target) max
+      else target
+    }
     val image = ImageIO.read(File("${uploadInfoDTO.uploadPath}/${uploadInfoDTO.filename}"))
 
     var redMin = 255
@@ -93,24 +101,12 @@ class ProfileService {
         greenSum += green
         blueSum += blue
 
-        redMin =
-          if (redMin >= red) red
-          else redMin
-        redMax =
-          if (redMax <= red) red
-          else redMax
-        greenMin =
-          if (greenMin >= green) green
-          else greenMin
-        greenMax =
-          if (greenMax <= green) green
-          else greenMax
-        blueMin =
-          if (blueMin >= blue) blue
-          else blueMin
-        blueMax =
-          if (blueMax <= blue) blue
-          else blueMax
+        redMin = minValue(redMin, red)
+        redMax = maxValue(redMax, red)
+        greenMin = minValue(greenMin, green)
+        greenMax = maxValue(greenMax, green)
+        blueMin = minValue(blueMin, blue)
+        blueMax = maxValue(blueMax, blue)
       }
     }
     val areaValue = image.height * image.width
